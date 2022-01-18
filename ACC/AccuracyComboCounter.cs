@@ -41,14 +41,16 @@ namespace ACC
 			this.accManager = accManager;
 			this.config = PluginConfig.Instance;
 			this.accComboUIController = UnityEngine.Object.Instantiate(comboUIController.gameObject).GetComponent<ComboUIController>();
+			SetFamilyActive(accComboUIController.transform, true);
 
 			// If the environment type is not supported (or if the sceneSetupData is null), do not init counter.
 			if (!EnvironmentUtils.IsSupportedEnvironmentType(sceneSetupData))
 				return;
 
-
+			// Set combo values from previous game to 0
 			accManager.Reset();
 
+			// Get the proper offset values for the current environment
 			InitOffsetsForEnvironment(sceneSetupData);
 
 			// Init Counters
@@ -60,7 +62,17 @@ namespace ACC
 			RefreshCountersText();
 
 			// Show init information
-			DebugCounterInit();
+			//DebugCounterInit();
+		}
+
+		private void SetFamilyActive(Transform parent, bool beActive)
+		{
+			// Set parent object to active
+			parent.gameObject.SetActive(beActive);
+
+			// Set all children to active
+			foreach (Transform child in parent)
+				SetFamilyActive(child, beActive);
 		}
 
 		private void DebugCounterInit()
