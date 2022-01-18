@@ -19,7 +19,7 @@ namespace ACC
 	{
 		private const float ExtraCounterPadding = 0.4f;
 
-		private float[] ExtraCounterOffsets;
+		private float[] ExtraCounterOffsets = { };
 		private float ComboCounterVerticalOffset;
 
 		public static FieldAccessor<ComboUIController, TextMeshProUGUI>.Accessor ComboUIText = FieldAccessor<ComboUIController, TextMeshProUGUI>.GetAccessor("_comboText");
@@ -31,10 +31,8 @@ namespace ACC
 		private readonly CanvasUtility canvasUtility;
 		private readonly CustomConfigModel settings;
 		private readonly AccManager accManager;
-		private readonly ComboUIController tcComboUIController;
 		private readonly PluginConfig config;
-
-		//private readonly string envName;
+		private ComboUIController accComboUIController;
 
 		public AccuracyComboCounter(AccManager accManager, CanvasUtility canvasUtility, CustomConfigModel settings, ComboUIController comboUIController, [InjectOptional] GameplayCoreSceneSetupData sceneSetupData)
 		{
@@ -42,32 +40,30 @@ namespace ACC
 			this.settings = settings;
 			this.accManager = accManager;
 			this.config = PluginConfig.Instance;
+			this.accComboUIController = UnityEngine.Object.Instantiate(comboUIController.gameObject).GetComponent<ComboUIController>();
+
+			// If the environment type is not supported (or if the sceneSetupData is null), do not init counter.
+			if (!EnvironmentUtils.IsSupportedEnvironmentType(sceneSetupData))
+				return;
+
 
 			accManager.Reset();
 
-			string envName = "";
-			if (sceneSetupData != null)
-				envName = sceneSetupData.environmentInfo.serializedName;
+			InitOffsetsForEnvironment(sceneSetupData);
 
-			ComboCounterVerticalOffset = EnvironmentUtils.GetComboCounterOffset(envName);
-			ExtraCounterOffsets = EnvironmentUtils.GetExtraCountersOffsets(envName);
-			
-
-			tcComboUIController = UnityEngine.Object.Instantiate(comboUIController.gameObject).GetComponent<ComboUIController>();
-
-			if (config.HideComboBreakAnimation)
-				ComboBreakAnimator(ref tcComboUIController).speed = 69420f; // Thanks to Kinsi55's Tweaks55 for providing me with the proper animation speed value.
-
+			// Init Counters
 			InitComboCounter();
 			InitMaxComboCounter();
 			InitMissesCounter();
 
-			//DebugCounterPos();
-
+			// Refresh text to starting values.
 			RefreshCountersText();
+
+			// Show init information
+			DebugCounterInit();
 		}
 
-		private void DebugCounterPos()
+		private void DebugCounterInit()
 		{
 			HUDCanvas? canvas = canvasUtility.GetCanvasSettingsFromID(settings.CanvasID);
 			if (canvas != null)
@@ -77,7 +73,7 @@ namespace ACC
 
 			if (maxComboCounter != null && lowAccCutsCounter != null)
 			{
-				Vector3 comboPos = tcComboUIController.transform.position;
+				Vector3 comboPos = accComboUIController.transform.position;
 				Plugin.Log.Notice($"comboPos pos = x:{comboPos.x}, y:{comboPos.y}, z:{comboPos.z}");
 				Vector3 maxComboPos = maxComboCounter.transform.position;
 				Plugin.Log.Notice($"maxComboPos pos = x:{maxComboPos.x}, y:{maxComboPos.y}, z:{maxComboPos.z}");
@@ -91,6 +87,14 @@ namespace ACC
 
 		}
 
+		private void InitOffsetsForEnvironment(GameplayCoreSceneSetupData? sceneSetupData)
+		{
+			string envName = sceneSetupData == null ? "" : sceneSetupData.environmentInfo.serializedName;
+
+			ComboCounterVerticalOffset = EnvironmentUtils.GetComboCounterOffset(envName);
+			ExtraCounterOffsets = EnvironmentUtils.GetExtraCountersOffsets(envName);
+		}
+
 		private void InitComboCounter()
 		{
 			if (canvasUtility != null)
@@ -99,14 +103,18 @@ namespace ACC
 				float verticalOffset = ComboCounterVerticalOffset + GetExtraVerticalOffsetComboCounter();
 				TMP_Text counterText = canvasUtility.CreateTextFromSettings(settings, new Vector3(0, verticalOffset, 0));
 				Vector3 counterPos = counterText.transform.position;
-				tcComboUIController.transform.position = new Vector3(counterPos.x, counterPos.y, counterPos.z);
+				accComboUIController.transform.position = new Vector3(counterPos.x, counterPos.y, counterPos.z);
 				GameObject.Destroy(counterText);
 
 				// Set counter text
-				Transform comboTextTrans = tcComboUIController.transform.Find("ComboText");
+				Transform comboTextTrans = accComboUIController.transform.Find("ComboText");
 				TextMeshProUGUI comboText = comboTextTrans.GetComponent<TextMeshProUGUI>();
 				if (comboText != null)
 					comboText.text = $"Combo > {config.AccuracyThreshold-1}";
+
+				// Disable animation if required
+				if (config.HideComboBreakAnimation)
+					ComboBreakAnimator(ref accComboUIController).speed = 69420f; // Thanks to Kinsi55's Tweaks55 for providing me with the proper animation speed value.
 			}
 		}
 
@@ -185,12 +193,12 @@ namespace ACC
 
 		private void ATManager_OnComboBroken(object sender, EventArgs e)
 		{
-			tcComboUIController.HandleComboBreakingEventHappened();
+			accComboUIController.HandleComboBreakingEventHappened();
 		}
 
 		private void RefreshCountersText()
 		{
-			tcComboUIController.HandleComboDidChange(accManager.ProvisionalCombo);
+			accComboUIController.HandleComboDidChange(accManager.ProvisionalCombo);
 
 			if (maxComboCounter != null)
 				maxComboCounter.text = $"Max Combo : {accManager.MaxCombo}";

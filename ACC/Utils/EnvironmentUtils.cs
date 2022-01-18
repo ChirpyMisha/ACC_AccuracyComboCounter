@@ -17,6 +17,21 @@ namespace ACC.Utils
 		private static readonly float[] OffsetsBillieOffset = { -0.20f, -0.20f, 0.0f, 0.20f, 0.20f };
 		private static readonly float[] OffsetsSpookyOffset = { -0.10f, -0.10f, 0.0f, -0.13f, -0.12f };
 
+
+
+		internal static bool IsSupportedEnvironmentType(GameplayCoreSceneSetupData sceneSetupData)
+		{
+			if (sceneSetupData != null)
+			{
+				//Plugin.Log.Notice($"environmentType.typeNameLocalizationKey = {sceneSetupData.environmentInfo.environmentType.typeNameLocalizationKey}");
+				if (sceneSetupData.environmentInfo.environmentType.typeNameLocalizationKey == "NORMAL_ENVIRONMENT_TYPE")
+					return true;
+
+				Plugin.Log.Error("This environment is currently not supported. AccuracyComboCounter won't be initialized.");
+			}
+			return false;
+		}
+
 		internal static float GetComboCounterOffset(string envName)
 		{
 			float offset = ComboCounterOffsetDefault;
