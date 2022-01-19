@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.Collections.Generic;
 using ACC.Configuration;
 using Zenject;
@@ -11,7 +12,7 @@ namespace ACC.Core
 
 		private Dictionary<ISaberSwingRatingCounter, NoteCutInfo> swingCounterCutInfo = new Dictionary<ISaberSwingRatingCounter, NoteCutInfo>();
 
-		private readonly ScoreController scoreController;
+		private readonly ScoreController? scoreController;
 		private readonly AccManager accManager;
 		private readonly PluginConfig config;
 
@@ -40,8 +41,12 @@ namespace ACC.Core
 		public void Dispose()
 		{
 			// Unassign events
-			scoreController.noteWasMissedEvent -= ScoreController_noteWasMissedEvent;
-			scoreController.noteWasCutEvent -= ScoreController_noteWasCutEvent;
+			if (scoreController != null)
+			{
+				scoreController.noteWasMissedEvent -= ScoreController_noteWasMissedEvent;
+				scoreController.noteWasCutEvent -= ScoreController_noteWasCutEvent;
+			}
+
 			ScoreControllerWallCollisionDetectionPatch.wallCollisionEvent -= WallCollisionDetector_wallCollisionEvent;
 		}
 
@@ -124,14 +129,11 @@ namespace ACC.Core
 		{
 			if (IsCutAboveThreshold(saberSwingRatingCounter))
 			{
-				Plugin.Log.Error("I NEVER EXPECTED THIS TO GET CALLED BUT HERE WE ARE . . .");
+				Plugin.Log.Warn("Please let ChirpyMisha know that \"the condition\" has been met. The world may end if this warning will be ignored . . .");
 				accManager.IncreaseCombo(IncreaseComboType.ProvisionalFinish);
 			}
 			else
-			{
-				Plugin.Log.Warn("Breaking Combo");
 				accManager.BreakCombo(BrokenComboType.BelowThresholdOnFinish);
-			}
 
 			UnregisterSaberSwingRatingCounter(saberSwingRatingCounter);
 		}
