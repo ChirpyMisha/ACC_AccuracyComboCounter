@@ -15,7 +15,7 @@ namespace ACC
 
 	[HarmonyPatch(typeof(ComboUIController))]
 	[HarmonyPatch("Start")]
-	class ComboUIthingPatch
+	class ComboUIControllerPatch
 	{
 		internal static void Postfix(TextMeshProUGUI ____comboText, ComboUIController __instance)
 		{
