@@ -17,6 +17,7 @@ namespace ACC
 	{
 #pragma warning disable CS8618
 		public static Harmony harmony;
+		public static AccManager AccManager { get; set; }
 
 		internal static Plugin Instance { get; private set; }
 		internal static IPALogger Log { get; private set; }

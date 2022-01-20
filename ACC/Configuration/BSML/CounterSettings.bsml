@@ -4,6 +4,8 @@
 										 integer-only='true' min='0' max='115' increment='1'/>
 	<checkbox-setting text='Show On Results Screen' hover-hint='Do you want the number of good cuts and your max combo to be shown on the results screen?'
 										value='ShowOnResultsScreen' apply-on-change='true'/>
+	<checkbox-setting text='Hide Combo Break Animation' hover-hint='Is the combo break animation too distracting? Turn this on to hide it.'
+										value='HideComboBreakAnimation' apply-on-change='true'/>
 
 	<text text=':Extra Counters:' font-size='5' align='Center'/>
 	
@@ -23,8 +25,21 @@
 	<checkbox-setting text='Break On Wall' hover-hint='Should the combo break when you&#39;re banging your head against a wall?'
 										value='BreakOnWall' apply-on-change='true'/>
 
-	<text text=':Extra Settings:' font-size='5' align='Center'/>
+	<horizontal hover-hint='Any of the values below can be shown in any counter by using its identifier.&#xA;
+			%n = NoteCount&#xA;
+			%c = Combo&#xA;
+			%m = MaxCombo&#xA;
+			%l = LowAccCuts&#xA;
+			%t = AccuracyThreshold'>
+		<text text=':Extra Settings:' font-size='5' align='Center'/>
+	</horizontal>
 
-	<checkbox-setting text='Hide Combo Break Animation' hover-hint='Is the combo break animation too distracting? Turn this on to hide it.'
-										value='HideComboBreakAnimation' apply-on-change='true'/>
+	<string-setting text='Combo Label Text' hover-hint='Change the Combo label text to anything you like. (Hover over the Extra Settings text for information about the formatting)'
+												value='ComboLabelText' apply-on-change='true'/>
+	<string-setting text='Combo Counter Text' hover-hint='Change the Combo Counter text to anything you like. (Hover over the Extra Settings text for information about the formatting)'
+												value='ComboCounterText' apply-on-change='true'/>
+	<string-setting text='Max Combo Counter Text' hover-hint='Change the Max Combo Counter text to anything you like. (Hover over the Extra Settings text for information about the formatting)'
+											value='MaxComboCounterText' apply-on-change='true'/>
+	<string-setting text='Low Acc Cuts Counter Text' hover-hint='Change the Low Acc Cuts Counter text to anything you like. (Hover over the Extra Settings text for information about the formatting)'
+											value='LowAccCutsCounterText' apply-on-change='true'/>
 </vertical>

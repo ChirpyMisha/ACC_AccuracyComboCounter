@@ -17,6 +17,10 @@ namespace ACC.Configuration
 		public virtual bool BreakOnBomb { get; set; } = true;
 		public virtual bool BreakOnWall { get; set; } = true;
 		public virtual bool HideComboBreakAnimation { get; set; } = false;
+		public virtual string ComboLabelText { get; set; } = "Combo > %t";
+		public virtual string ComboCounterText { get; set; } = "%c";
+		public virtual string MaxComboCounterText { get; set; } = "Max Combo : %m";
+		public virtual string LowAccCutsCounterText { get; set; } = "Cuts Below %t : %l";
 
 
 		/// <summary>

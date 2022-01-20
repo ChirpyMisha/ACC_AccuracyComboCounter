@@ -70,6 +70,34 @@ namespace ACC.Configuration
 			set { PluginConfig.Instance.HideComboBreakAnimation = value; }
 		}
 
+		[UIValue("ComboLabelText")]
+		public virtual string ComboLabelText
+		{
+			get { return PluginConfig.Instance.ComboLabelText; }
+			set { PluginConfig.Instance.ComboLabelText = value; }
+		}
+
+		[UIValue("ComboCounterText")]
+		public virtual string ComboCounterText
+		{
+			get { return PluginConfig.Instance.ComboCounterText; }
+			set { PluginConfig.Instance.ComboCounterText = value; }
+		}
+
+		[UIValue("MaxComboCounterText")]
+		public virtual string MaxComboCounterText
+		{
+			get { return PluginConfig.Instance.MaxComboCounterText; }
+			set { PluginConfig.Instance.MaxComboCounterText = value; }
+		}
+
+		[UIValue("LowAccCutsCounterText")]
+		public virtual string LowAccCutsCounterText
+		{
+			get { return PluginConfig.Instance.LowAccCutsCounterText; }
+			set { PluginConfig.Instance.LowAccCutsCounterText = value; }
+		}
+
 
 
 		[UIValue(nameof(ExtraCounterPositionsList))]

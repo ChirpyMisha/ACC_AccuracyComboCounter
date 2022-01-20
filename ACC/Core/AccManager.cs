@@ -16,11 +16,50 @@ namespace ACC.Core
 		public int NoteCount { get; private set; }
 		public int Combo { get; private set; }
 		public int MaxCombo { get; private set; }
-		public int Misses { get; private set; }
+		public int LowAccCuts { get; private set; }
 		public int ProvisionalCombo => Combo + provisionalCutCount;
-		public int CutCount => NoteCount - Misses;
+		public int CutCount => NoteCount - LowAccCuts;
 
-		public AccManager() => config = PluginConfig.Instance;
+		public string InsertValuesInFormattedString(string s)
+		{
+			for (int i = 0; i < s.Length-1; i++)
+			{
+				if (s[i] == '%')
+				{
+					switch (char.ToLower(s[i + 1]))
+					{
+						
+						case 'c':
+							s = InsertValAt(s, ProvisionalCombo, i);
+							break;
+						case 'm':
+							s = InsertValAt(s, MaxCombo, i);
+							break;
+						case 'l':
+							s = InsertValAt(s, LowAccCuts, i);
+							break;
+						case 't':
+							s = InsertValAt(s, config.AccuracyThreshold, i);
+							break;
+						case 'n':
+							s = InsertValAt(s, NoteCount, i);
+							break;
+					}
+					//Plugin.Log.Info("s = " + s);
+				}
+			}
+
+			return s;
+		}
+		private string InsertValAt(string str, int val, int i)
+		{
+			//Plugin.Log.Notice($"str: \"{str}\"\ni: {i}\nval: {val}\nlength: {str.Length}");
+			str = str.Remove(i, 2);
+			str = str.Insert(i, val.ToString());
+			return str;
+		}
+
+		public AccManager() { config = PluginConfig.Instance; Plugin.AccManager = this; }
 
 		public void Initialize()
 		{
@@ -37,7 +76,7 @@ namespace ACC.Core
 			provisionalCutCount = 0;
 			Combo = 0;
 			MaxCombo = 0;
-			Misses = 0;
+			LowAccCuts = 0;
 		}
 
 		public void IncreaseCombo(IncreaseComboType type)
@@ -93,7 +132,7 @@ namespace ACC.Core
 		private void BreakCombo()
 		{
 			NoteCount++;
-			Misses++;
+			LowAccCuts++;
 			Combo = 0;
 
 			// Inform listeners that the combo has updated
@@ -122,6 +161,11 @@ namespace ACC.Core
 				// Invoke event
 				handler(this, EventArgs.Empty);
 			}
+		}
+
+		internal string InsertValuesInFormattedString(object maxComboCounterText)
+		{
+			throw new NotImplementedException();
 		}
 	}
 

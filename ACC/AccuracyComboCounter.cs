@@ -25,6 +25,8 @@ namespace ACC
 		public static FieldAccessor<ComboUIController, TextMeshProUGUI>.Accessor ComboUIText = FieldAccessor<ComboUIController, TextMeshProUGUI>.GetAccessor("_comboText");
 		public static FieldAccessor<ComboUIController, Animator>.Accessor ComboBreakAnimator = FieldAccessor<ComboUIController, Animator>.GetAccessor("_animator");
 
+		private TextMeshProUGUI? comboLabelText;
+		private TextMeshProUGUI? comboCounterText;
 		private TMP_Text? maxComboCounter;
 		private TMP_Text? lowAccCutsCounter;
 
@@ -33,6 +35,8 @@ namespace ACC
 		private readonly AccManager accManager;
 		private readonly PluginConfig config;
 		private ComboUIController accComboUIController;
+
+		private bool doUpdateComboCounterTextOnCut;
 
 		public AccuracyComboCounter(AccManager accManager, CanvasUtility canvasUtility, CustomConfigModel settings, ComboUIController comboUIController, [InjectOptional] GameplayCoreSceneSetupData sceneSetupData)
 		{
@@ -111,23 +115,41 @@ namespace ACC
 		{
 			if (canvasUtility != null)
 			{
-				// Set counter position
+				accComboUIController.name = "AccComboUIController";
+
+				// Set position
 				float verticalOffset = ComboCounterVerticalOffset + GetExtraVerticalOffsetComboCounter();
 				TMP_Text counterText = canvasUtility.CreateTextFromSettings(settings, new Vector3(0, verticalOffset, 0));
 				Vector3 counterPos = counterText.transform.position;
 				accComboUIController.transform.position = new Vector3(counterPos.x, counterPos.y, counterPos.z);
 				GameObject.Destroy(counterText);
 
+				// Set label text
+				Transform comboLabelTextTrans = accComboUIController.transform.Find("ComboText");
+				comboLabelText = comboLabelTextTrans.GetComponent<TextMeshProUGUI>();
+				if (comboLabelText != null) comboLabelText.text = accManager.InsertValuesInFormattedString(config.ComboLabelText);
+				doUpdateComboCounterTextOnCut = TextRequiresUpdating(config.ComboLabelText);
+
 				// Set counter text
-				Transform comboTextTrans = accComboUIController.transform.Find("ComboText");
-				TextMeshProUGUI comboText = comboTextTrans.GetComponent<TextMeshProUGUI>();
-				if (comboText != null)
-					comboText.text = $"Combo > {config.AccuracyThreshold-1}";
+				comboCounterText = ComboUIText(ref accComboUIController);
+				if (comboCounterText != null) comboCounterText.text = accManager.InsertValuesInFormattedString(config.ComboCounterText);
+				Plugin.Log.Notice("I should be second!");
 
 				// Disable animation if required
 				if (config.HideComboBreakAnimation)
 					ComboBreakAnimator(ref accComboUIController).speed = 69420f; // Thanks to Kinsi55's Tweaks55 for providing me with the proper animation speed value.
 			}
+		}
+
+		private bool TextRequiresUpdating(string str)
+		{
+			int i = 0;
+			while ((i = str.IndexOf('%', i)) >= 0)
+			{
+				if (++i != str.Length && str[i] != 't')
+					return true;
+			}
+			return false;
 		}
 
 		private float GetExtraVerticalOffsetComboCounter()
@@ -210,12 +232,16 @@ namespace ACC
 
 		private void RefreshCountersText()
 		{
-			accComboUIController.HandleComboDidChange(accManager.ProvisionalCombo);
+			//accComboUIController.HandleComboDidChange(accManager.ProvisionalCombo);
 
+			if (doUpdateComboCounterTextOnCut && comboLabelText != null)
+				comboLabelText.text = accManager.InsertValuesInFormattedString(config.ComboLabelText);
+			if (comboCounterText != null)
+				comboCounterText.text = accManager.InsertValuesInFormattedString(config.ComboCounterText);
 			if (maxComboCounter != null)
-				maxComboCounter.text = $"Max Combo : {accManager.MaxCombo}";
+				maxComboCounter.text = accManager.InsertValuesInFormattedString(config.MaxComboCounterText);
 			if (lowAccCutsCounter != null)
-				lowAccCutsCounter.text = $"Cuts Below {config.AccuracyThreshold} : {accManager.Misses}";
+				lowAccCutsCounter.text = accManager.InsertValuesInFormattedString(config.LowAccCutsCounterText);
 		}
 	}
 }

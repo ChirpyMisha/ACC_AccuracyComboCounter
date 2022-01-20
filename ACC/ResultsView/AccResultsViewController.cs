@@ -87,7 +87,7 @@ namespace ACC.ResultsView
 			if (PluginConfig.Instance.ShowOnResultsScreen && accResultText != null && accMaxComboText != null)
 			{
 				accResultText.text = $"{accManager.CutCount}<size=70%> / {accManager.NoteCount}</size>";
-				accMaxComboText.text = accManager.Misses > 0 ? $"ACC COMBO {accManager.MaxCombo}" : $"FULL ACC COMBO";
+				accMaxComboText.text = accManager.LowAccCuts > 0 ? $"ACC COMBO {accManager.MaxCombo}" : $"FULL ACC COMBO";
 			}
 		}
 

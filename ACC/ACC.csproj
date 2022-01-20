@@ -140,6 +140,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AccuracyComboCounter.cs" />
+    <Compile Include="ComboUIthingPatch.cs" />
     <Compile Include="Configuration\ConfigController.cs" />
     <Compile Include="Core\AccManager.cs" />
     <Compile Include="Core\AccTracker.cs" />
