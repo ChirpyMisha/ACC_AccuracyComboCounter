@@ -26,11 +26,13 @@ namespace ACC.ResultsView
 		private readonly AccManager accManager;
 		private ResultsViewController resultsViewController;
 		private LevelCompletionResults levelCompletionResults = null!;
+		private readonly PluginConfig config;
 
 		public AccResultsViewController(AccManager accManager, ResultsViewController resultsViewController)
 		{
 			this.accManager = accManager;
 			this.resultsViewController = resultsViewController;
+			this.config = PluginConfig.Instance;
 		}
 
 		public void Initialize()
@@ -86,8 +88,9 @@ namespace ACC.ResultsView
 			// Set the text
 			if (PluginConfig.Instance.ShowOnResultsScreen && accResultText != null && accMaxComboText != null)
 			{
-				accResultText.text = $"{accManager.CutCount}<size=70%> / {accManager.NoteCount}</size>";
-				accMaxComboText.text = accManager.LowAccCuts > 0 ? $"ACC COMBO {accManager.MaxCombo}" : $"FULL ACC COMBO";
+				accResultText.text = accManager.InsertValuesInFormattedString(config.ResultText);
+				string maxComboText = accManager.LowAccCuts > 0 ? config.MaxComboText : config.FullComboText;
+				accMaxComboText.text = accManager.InsertValuesInFormattedString(maxComboText);
 			}
 		}
 

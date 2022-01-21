@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 using IPA.Config.Stores;
 
 [assembly: InternalsVisibleTo(GeneratedStore.AssemblyVisibilityTarget)]
@@ -17,10 +18,22 @@ namespace ACC.Configuration
 		public virtual bool BreakOnBomb { get; set; } = true;
 		public virtual bool BreakOnWall { get; set; } = true;
 		public virtual bool HideComboBreakAnimation { get; set; } = false;
-		public virtual string ComboLabelText { get; set; } = "Combo > %t";
-		public virtual string ComboCounterText { get; set; } = "%c";
-		public virtual string MaxComboCounterText { get; set; } = "Max Combo : %m";
-		public virtual string LowAccCutsCounterText { get; set; } = "Cuts Below %t : %l";
+		public virtual string ComboLabelText { get; set; } = DefaultComboLabelText;
+		public virtual string ComboCounterText { get; set; } = DefaultComboCounterText;
+		public virtual string MaxComboCounterText { get; set; } = DefaultMaxComboCounterText;
+		public virtual string LowAccCutsCounterText { get; set; } = DefaultLowAccCutsCounterText;
+		public virtual string ResultText { get; set; } = DefaultResultText;
+		public virtual string MaxComboText { get; set; } = DefaultMaxComboText;
+		public virtual string FullComboText { get; set; } = DefaultFullComboText;
+
+		internal const string DefaultComboLabelText = "Combo > %t";
+		internal const string DefaultComboCounterText = "%c";
+		internal const string DefaultMaxComboCounterText = "Max Combo : %m";
+		internal const string DefaultLowAccCutsCounterText = "Cuts Below %t : %l";
+		internal const string DefaultResultText = "%h<size=70%> / %n</size>";
+		internal const string DefaultMaxComboText = "ACC COMBO %m";
+		internal const string DefaultFullComboText = "FULL ACC COMBO";
+
 
 
 		/// <summary>
@@ -47,6 +60,7 @@ namespace ACC.Configuration
 			// This instance's members populated from other
 		}
 	}
+
 	public enum ExtraCounterPositions
 	{
 		AboveCounterPosTwo,

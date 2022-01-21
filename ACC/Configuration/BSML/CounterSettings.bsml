@@ -25,19 +25,33 @@
 	<checkbox-setting text='Break On Wall' hover-hint='Should the combo break when you&#39;re banging your head against a wall?'
 										value='BreakOnWall' apply-on-change='true'/>
 
+	<!--ADD BUTTON(s) TO RESET STRINGS TO DEFAULT!-->
 		<clickable-text text=':Counter Text Settings:' font-size='5' align='Center' hover-hint='Any of the values below can be shown in any counter by using its identifier.&#xA;
-%t = AccuracyThreshold&#xA;
+%t = Accuracy Threshold&#xA;
 %c = Combo&#xA;
-%m = MaxCombo&#xA;
-%l = LowAccCuts&#xA;
-%n = NoteCount'/>
+%m = Max Combo&#xA;
+%h = High Acc Cuts (Good Cuts)&#xA;
+%l = LowAccCuts (Bad Cuts)&#xA;
+%n = NoteCount (Total Cuts)'/>
 
-	<string-setting text='Combo Label Text' hover-hint='Change the Combo label text to anything you like. (Hover over the Counter Text Settings text for information about the formatting)'
-												value='ComboLabelText' apply-on-change='true'/>
-	<string-setting text='Combo Counter Text' hover-hint='Change the Combo Counter text to anything you like. (Hover over the Counter Text Settings text for information about the formatting)'
-												value='ComboCounterText' apply-on-change='true'/>
-	<string-setting text='Max Combo Counter Text' hover-hint='Change the Max Combo Counter text to anything you like. (Hover over the Counter Text Settings text for information about the formatting)'
-											value='MaxComboCounterText' apply-on-change='true'/>
-	<string-setting text='Low Acc Cuts Counter Text' hover-hint='Change the Low Acc Cuts Counter text to anything you like. (Hover over the Counter Text Settings text for information about the formatting)'
-											value='LowAccCutsCounterText' apply-on-change='true'/>
+	<horizontal>
+		<string-setting text='Combo Label Text' hover-hint='Change the Combo label text to anything you like. (Hover over the Counter Text Settings text for information about the formatting)'
+										value='ComboLabelText' apply-on-change='true' bind-value='true'/>
+		<button text='⭯' hover-hint='Reset to default' click-event='reset-combo-label-text'/>
+	</horizontal>
+	<horizontal>
+		<string-setting text='Combo Counter Text' hover-hint='Change the Combo Counter text to anything you like. (Hover over the Counter Text Settings text for information about the formatting)'
+										value='ComboCounterText' apply-on-change='true' bind-value='true'/>
+		<button text='⭯' hover-hint='Reset to default' click-event='reset-combo-counter-text'/>
+	</horizontal>
+	<horizontal>
+		<string-setting text='Max Combo Counter Text' hover-hint='Change the Max Combo Counter text to anything you like. (Hover over the Counter Text Settings text for information about the formatting)'
+										value='MaxComboCounterText' apply-on-change='true' bind-value='true' interactable='~is-max-combo-counter-enabled' font-color='~is-max-combo-counter-enabled-color'/>
+		<button text='⭯' hover-hint='Reset to default' click-event='reset-max-combo-counter-text' interactable='~is-max-combo-counter-enabled'/>
+	</horizontal>
+	<horizontal>
+		<string-setting text='Low Acc Cuts Counter Text' hover-hint='Change the Low Acc Cuts Counter text to anything you like. (Hover over the Counter Text Settings text for information about the formatting)'
+										value='LowAccCutsCounterText' apply-on-change='true' bind-value='true' interactable='~is-low-acc-cuts-counter-enabled' font-color='~is-low-acc-cuts-counter-enabled-color'/>
+		<button text='⭯' hover-hint='Reset to default' click-event='reset-low-acc-cuts-counter-text' interactable='~is-low-acc-cuts-counter-enabled'/>
+	</horizontal>
 </vertical>

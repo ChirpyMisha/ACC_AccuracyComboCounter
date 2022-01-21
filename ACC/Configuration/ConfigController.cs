@@ -1,12 +1,29 @@
 ﻿using BeatSaberMarkupLanguage.Attributes;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
-//using static ACC.Configuration.PluginConfig;
+using System.Runtime.CompilerServices;
+using UnityEngine;
 
 namespace ACC.Configuration
 {
-	class ConfigController
+	class ConfigController : INotifyPropertyChanged
 	{
+		private static string enabledTextColor = "#" + ColorUtility.ToHtmlStringRGB(Color.white);
+		private static string disabledTextColor = "#" + ColorUtility.ToHtmlStringRGB(Color.grey);
+		private string GetInteractabilityColor(bool isEnabled) => isEnabled ? enabledTextColor : disabledTextColor;
+
+#pragma warning disable CS8618
+		public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore CS8618
+
+		private void RaisePropertyChanged([CallerMemberName] string propertyName = "")
+		{
+			this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+		}
+
+		// Settings getters/setters
 		[UIValue("AccuracyThreshold")]
 		public virtual int AccuracyThreshold
 		{
@@ -25,14 +42,24 @@ namespace ACC.Configuration
 		public virtual ExtraCounterPositions MaxComboPosition
 		{
 			get { return PluginConfig.Instance.MaxComboPosition; }
-			set { PluginConfig.Instance.MaxComboPosition = value; }
+			set 
+			{
+				PluginConfig.Instance.MaxComboPosition = value;
+				RaisePropertyChanged();
+				UpdateInteractibilityMaxComboCounter();
+			}
 		}
 
 		[UIValue("LowAccCutsPosition")]
 		public virtual ExtraCounterPositions LowAccCutsPosition
 		{
 			get { return PluginConfig.Instance.LowAccCutsPosition; }
-			set { PluginConfig.Instance.LowAccCutsPosition = value; }
+			set 
+			{ 
+				PluginConfig.Instance.LowAccCutsPosition = value;
+				RaisePropertyChanged();
+				UpdateInteractibilityLowAccCutsCounter();
+			}
 		}
 
 		[UIValue("BreakOnMiss")]
@@ -74,28 +101,102 @@ namespace ACC.Configuration
 		public virtual string ComboLabelText
 		{
 			get { return PluginConfig.Instance.ComboLabelText; }
-			set { PluginConfig.Instance.ComboLabelText = value; }
+			set 
+			{ 
+				PluginConfig.Instance.ComboLabelText = value;
+				RaisePropertyChanged();
+			}
 		}
 
 		[UIValue("ComboCounterText")]
 		public virtual string ComboCounterText
 		{
 			get { return PluginConfig.Instance.ComboCounterText; }
-			set { PluginConfig.Instance.ComboCounterText = value; }
+			set 
+			{ 
+				PluginConfig.Instance.ComboCounterText = value;
+				RaisePropertyChanged();
+			}
 		}
 
 		[UIValue("MaxComboCounterText")]
 		public virtual string MaxComboCounterText
 		{
 			get { return PluginConfig.Instance.MaxComboCounterText; }
-			set { PluginConfig.Instance.MaxComboCounterText = value; }
+			set 
+			{ 
+				PluginConfig.Instance.MaxComboCounterText = value;
+				RaisePropertyChanged();
+			}
 		}
 
 		[UIValue("LowAccCutsCounterText")]
 		public virtual string LowAccCutsCounterText
 		{
 			get { return PluginConfig.Instance.LowAccCutsCounterText; }
-			set { PluginConfig.Instance.LowAccCutsCounterText = value; }
+			set 
+			{ 
+				PluginConfig.Instance.LowAccCutsCounterText = value;
+				RaisePropertyChanged();
+			}
+		}
+
+
+		// Reset to default buttons click events
+		[UIAction("#reset-combo-label-text")]
+		public void OnResetComboLabelText()
+		{
+			ComboLabelText = PluginConfig.DefaultComboLabelText;
+			RaisePropertyChanged(nameof(ComboLabelText));
+		}
+
+		[UIAction("#reset-combo-counter-text")]
+		public void OnResetComboCounterText()
+		{
+			ComboCounterText = PluginConfig.DefaultComboCounterText;
+			RaisePropertyChanged(nameof(ComboCounterText));
+		}
+
+		[UIAction("#reset-max-combo-counter-text")]
+		public void OnResetMaxComboCounterText() 
+		{
+			MaxComboCounterText = PluginConfig.DefaultMaxComboCounterText;
+			RaisePropertyChanged(nameof(MaxComboCounterText));
+		}
+
+		[UIAction("#reset-low-acc-cuts-counter-text")]
+		public void OnResetLowAccCutsCounterText() 
+		{
+			LowAccCutsCounterText = PluginConfig.DefaultLowAccCutsCounterText;
+			RaisePropertyChanged(nameof(LowAccCutsCounterText));
+		}
+
+
+
+		// Enable/Disable event handlers
+		[UIValue("is-max-combo-counter-enabled")]
+		private bool IsMaxComboCounterEnabled => IsDisabled(PluginConfig.Instance.MaxComboPosition);
+		[UIValue("is-max-combo-counter-enabled-color")]
+		private string IsMaxComboCounterEnabledColor => GetInteractabilityColor(IsMaxComboCounterEnabled);
+		
+		[UIValue("is-low-acc-cuts-counter-enabled")]
+		private bool IsLowAccCutsCounterEnabled => IsDisabled(PluginConfig.Instance.LowAccCutsPosition);
+		[UIValue("is-low-acc-cuts-counter-enabled-color")]
+		private string IsLowAccCutsCounterEnabledColor => GetInteractabilityColor(IsLowAccCutsCounterEnabled);
+		private bool IsDisabled(ExtraCounterPositions counterPos) => counterPos != ExtraCounterPositions.Disabled;
+
+
+		// Update interactibility
+		private void UpdateInteractibilityMaxComboCounter()
+		{
+			RaisePropertyChanged(nameof(IsMaxComboCounterEnabled));
+			RaisePropertyChanged(nameof(IsMaxComboCounterEnabledColor));
+		}
+
+		private void UpdateInteractibilityLowAccCutsCounter()
+		{
+			RaisePropertyChanged(nameof(IsLowAccCutsCounterEnabled));
+			RaisePropertyChanged(nameof(IsLowAccCutsCounterEnabledColor));
 		}
 
 

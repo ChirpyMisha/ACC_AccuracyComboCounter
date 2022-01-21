@@ -18,7 +18,7 @@ namespace ACC.Core
 		public int MaxCombo { get; private set; }
 		public int LowAccCuts { get; private set; }
 		public int ProvisionalCombo => Combo + provisionalCutCount;
-		public int CutCount => NoteCount - LowAccCuts;
+		public int HighAccCuts => NoteCount - LowAccCuts;
 
 		public string InsertValuesInFormattedString(string s)
 		{
@@ -41,11 +41,13 @@ namespace ACC.Core
 						case 't':
 							s = InsertValAt(s, config.AccuracyThreshold, i);
 							break;
+						case 'h':
+							s = InsertValAt(s, HighAccCuts, i);
+							break;
 						case 'n':
 							s = InsertValAt(s, NoteCount, i);
 							break;
 					}
-					//Plugin.Log.Info("s = " + s);
 				}
 			}
 
@@ -53,7 +55,6 @@ namespace ACC.Core
 		}
 		private string InsertValAt(string str, int val, int i)
 		{
-			//Plugin.Log.Notice($"str: \"{str}\"\ni: {i}\nval: {val}\nlength: {str.Length}");
 			str = str.Remove(i, 2);
 			str = str.Insert(i, val.ToString());
 			return str;
