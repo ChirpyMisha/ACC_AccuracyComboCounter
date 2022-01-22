@@ -41,11 +41,11 @@ namespace ACC.Core
 						case 't':
 							s = InsertValAt(s, config.AccuracyThreshold, i);
 							break;
-						case 'h':
-							s = InsertValAt(s, HighAccCuts, i);
-							break;
 						case 'n':
 							s = InsertValAt(s, NoteCount, i);
+							break;
+						case 'h':
+							s = InsertValAt(s, HighAccCuts, i);
 							break;
 					}
 				}
@@ -82,8 +82,6 @@ namespace ACC.Core
 
 		public void IncreaseCombo(IncreaseComboType type)
 		{
-			//Plugin.Log.Notice("IncreaseCombo of type" + type.ToString());
-
 			if (type == IncreaseComboType.ProvisionalOnCut)
 				provisionalCutCount++;
 			else if (type == IncreaseComboType.ProvisionalFinish)
@@ -101,7 +99,6 @@ namespace ACC.Core
 			NoteCount++;
 			if (++Combo > MaxCombo)
 				MaxCombo = Combo;
-			//Plugin.Log.Notice($"Combo Increased. [combo: {Combo}, MaxCombo: {MaxCombo}, ProvisionalCount: {provisionalCutCount}, Misses: {Misses}]");
 		}
 
 		public void BreakCombo(BrokenComboType type)

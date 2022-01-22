@@ -129,7 +129,7 @@ namespace ACC.Core
 		{
 			if (IsCutAboveThreshold(saberSwingRatingCounter))
 			{
-				Plugin.Log.Warn("Please let ChirpyMisha know that \"the condition\" has been met. The world may end if this warning will be ignored . . .");
+				Plugin.Log.Warn("Please let ChirpyMisha know that \"the condition\" has been met. The world may end when this warning will be ignored . . .");
 				accManager.IncreaseCombo(IncreaseComboType.ProvisionalFinish);
 			}
 			else

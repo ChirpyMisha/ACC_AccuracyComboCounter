@@ -9,15 +9,15 @@ namespace ACC.Configuration
 	{
 		public static PluginConfig Instance { get; set; } = null!;
 
-		public virtual int AccuracyThreshold { get; set; } = 1;
+		public virtual int AccuracyThreshold { get; set; } = 0;
 		public virtual bool ShowOnResultsScreen { get; set; } = true;
-		public ExtraCounterPositions MaxComboPosition { get; set; } = ExtraCounterPositions.BelowCounterPosOne;
-		public ExtraCounterPositions LowAccCutsPosition { get; set; } = ExtraCounterPositions.BelowCounterPosTwo;
+		public virtual bool HideComboBreakAnimation { get; set; } = false;
+		public ExtraCounterPositions MaxComboPosition { get; set; } = ExtraCounterPositions.Disabled;
+		public ExtraCounterPositions LowAccCutsPosition { get; set; } = ExtraCounterPositions.Disabled;
 		public virtual bool BreakOnMiss { get; set; } = true;
 		public virtual bool BreakOnBadCut { get; set; } = true;
 		public virtual bool BreakOnBomb { get; set; } = true;
 		public virtual bool BreakOnWall { get; set; } = true;
-		public virtual bool HideComboBreakAnimation { get; set; } = false;
 		public virtual string ComboLabelText { get; set; } = DefaultComboLabelText;
 		public virtual string ComboCounterText { get; set; } = DefaultComboCounterText;
 		public virtual string MaxComboCounterText { get; set; } = DefaultMaxComboCounterText;
@@ -31,7 +31,7 @@ namespace ACC.Configuration
 		internal const string DefaultMaxComboCounterText = "Max Combo : %m";
 		internal const string DefaultLowAccCutsCounterText = "Cuts Below %t : %l";
 		internal const string DefaultResultText = "%h<size=70%> / %n</size>";
-		internal const string DefaultMaxComboText = "ACC COMBO %m";
+		internal const string DefaultMaxComboText = "MAX ACC COMBO %m";
 		internal const string DefaultFullComboText = "FULL ACC COMBO";
 
 

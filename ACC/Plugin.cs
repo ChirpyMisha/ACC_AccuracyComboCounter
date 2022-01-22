@@ -29,10 +29,11 @@ namespace ACC
 		/// [Init] methods that use a Constructor or called before regular methods like InitWithConfig.
 		/// Only use [Init] with one Constructor.
 		/// </summary>
-		public Plugin(IPALogger logger, Zenjector zenjector)
+		public Plugin(Config conf, IPALogger logger, Zenjector zenjector)
 		{
 			Instance = this;
 			Plugin.Log = logger;
+			PluginConfig.Instance = conf.Generated<PluginConfig>();
 
 			zenjector.Install(Location.App, (DiContainer Container) =>
 			{
@@ -48,19 +49,6 @@ namespace ACC
 			});
 		}
 
-		#region BSIPA Config
-		//Uncomment to use BSIPA's config
-		[Init]
-		public void InitWithConfig(Config conf)
-		{
-			PluginConfig.Instance = conf.Generated<PluginConfig>();
-			Plugin.Log?.Debug("Config loaded");
-		}
-		#endregion
-
-
-		#region Disableable
-
 		[OnEnable]
 		public void OnApplicationStart()
 		{
@@ -73,58 +61,5 @@ namespace ACC
 		{
 			harmony.UnpatchSelf();
 		}
-
-		/*
-        /// <summary>
-        /// Called when the plugin is disabled and on Beat Saber quit.
-        /// Return Task for when the plugin needs to do some long-running, asynchronous work to disable.
-        /// [OnDisable] methods that return Task are called after all [OnDisable] methods that return void.
-        /// </summary>
-        [OnDisable]
-        public async Task OnDisableAsync()
-        {
-            await LongRunningUnloadTask().ConfigureAwait(false);
-        }
-        */
-		#endregion
-
-		// Uncomment the methods in this section if using Harmony
-		#region Harmony
-		/*
-        /// <summary>
-        /// Attempts to apply all the Harmony patches in this assembly.
-        /// </summary>
-        internal static void ApplyHarmonyPatches()
-        {
-            try
-            {
-                Plugin.Log?.Debug("Applying Harmony patches.");
-                harmony.PatchAll(Assembly.GetExecutingAssembly());
-            }
-            catch (Exception ex)
-            {
-                Plugin.Log?.Error("Error applying Harmony patches: " + ex.Message);
-                Plugin.Log?.Debug(ex);
-            }
-        }
-
-        /// <summary>
-        /// Attempts to remove all the Harmony patches that used our HarmonyId.
-        /// </summary>
-        internal static void RemoveHarmonyPatches()
-        {
-            try
-            {
-                // Removes all patches with this HarmonyId
-                harmony.UnpatchAll(HarmonyId);
-            }
-            catch (Exception ex)
-            {
-                Plugin.Log?.Error("Error removing Harmony patches: " + ex.Message);
-                Plugin.Log?.Debug(ex);
-            }
-        }
-        */
-		#endregion
 	}
 }
