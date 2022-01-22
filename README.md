@@ -26,7 +26,7 @@ A combo counter that breaks if your score is below a set value.
 ### Extra Counters Settings
 | Setting name | Explanation / Info | Default value |
 | --- | --- | --- |
-| Max Combo Position<br>---------------<br>Low Acc Cuts Position | Select where the extra counter should be displayed relative to the Accuracy Combo Counter. Selecting a position below the counter will move the Accuracy Combo Counter up. <br>The options are:<br>- `Above +2`<br>- `Above +1`<br>- `Disabled`<br>- `Below -1`<br>- `Below -2` | `Disabled`<br>---------------<br>`Disabled` |
+| Max Combo Position<br><br><br>Low Acc Cuts Position | Select where the extra counter should be displayed relative to the Accuracy Combo Counter. Selecting a position below the counter will move the Accuracy Combo Counter up. <br>The options are:<br>- `Above +2`<br>- `Above +1`<br>- `Disabled`<br>- `Below -1`<br>- `Below -2` | `Disabled`<br><br><br>`Disabled` |
 
 ### Combo Breaking Events Settings
 | Setting name | Explanation / Info | Default value |
@@ -48,7 +48,7 @@ A combo counter that breaks if your score is below a set value.
 | Setting name | Explanation / Info | Default value |
 | --- | --- | --- |
 | Result Text | Customise the text that shows your good cuts and the note count on the results screen. | `"%h<size=70%> / %n</size>"` |
-| Max Combo Text | Change the text that appears on the results screen under the Result Text when your combo has been broken. | `"ACC COMBO %m"` |
+| Max Combo Text | Change the text that appears on the results screen under the Result Text when your combo has been broken. | `"MAX ACC COMBO %m"` |
 | Full Combo Text | Change the text that appears on the results screen under the Result Text when you get a Full Combo. | `"FULL ACC COMBO"` |
 
 
