@@ -127,13 +127,21 @@ namespace ACC
 				// Set label text
 				Transform comboLabelTextTrans = accComboUIController.transform.Find("ComboText");
 				comboLabelText = comboLabelTextTrans.GetComponent<TextMeshProUGUI>();
-				if (comboLabelText != null) comboLabelText.text = accManager.InsertValuesInFormattedString(config.ComboLabelText);
+				if (comboLabelText != null)
+				{
+					comboLabelText.text = accManager.InsertValuesInFormattedString(config.ComboLabelText);
+					comboLabelText.richText = true;
+				}
 				doUpdateComboCounterTextOnCut = TextRequiresUpdating(config.ComboLabelText);
 
 				// Set counter text
 				comboCounterText = ComboUIText(ref accComboUIController);
-				if (comboCounterText != null) comboCounterText.text = accManager.InsertValuesInFormattedString(config.ComboCounterText);
-				Plugin.Log.Notice("I should be second!");
+				if (comboCounterText != null)
+				{
+					comboCounterText.text = accManager.InsertValuesInFormattedString(config.ComboCounterText);
+					comboCounterText.enableWordWrapping = false;
+					comboCounterText.richText = true;
+				}
 
 				// Disable animation if required
 				if (config.HideComboBreakAnimation)
