@@ -1,6 +1,4 @@
-# AccuracyComboCounter (ACC)
-A combo counter that breaks if your score is below a set value.
-
+# ACC (AccuracyComboCounter)
 ## Main Features
 
 - Show a counter of your acc combo which is the amount of consecutive hits with a score above (and equal to) a user-defined accuracy threshold.
