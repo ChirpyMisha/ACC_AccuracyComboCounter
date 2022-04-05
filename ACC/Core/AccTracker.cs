@@ -101,6 +101,8 @@ namespace ACC.Core
 					accManager.IncreaseCombo(IncreaseComboType.OnCut);
 				else if (IsCutUnableToExceedThreshold(goodCutScoringElement))
 					accManager.BreakCombo(BrokenComboType.BelowThresholdOnCut);
+				else if (IsScoringFinished(goodCutScoringElement) && IsCutAboveThreshold(goodCutScoringElement))
+					accManager.IncreaseCombo(IncreaseComboType.OnCut);
 				else
 				{
 					accManager.IncreaseCombo(IncreaseComboType.ProvisionalOnCut);
@@ -108,8 +110,6 @@ namespace ACC.Core
 					goodCutScoringElement.cutScoreBuffer.RegisterDidFinishReceiver(this);
 				}
 			}
-			else
-				Plugin.Log.Notice($"AccTracker, ESS:\n> colorType = {scoringElement.noteData.colorType}\n> gameplayType = {scoringElement.noteData.gameplayType}\n> scoringType = {scoringElement.noteData.scoringType}");
 		}
 
 		public void HandleCutScoreBufferDidChange(CutScoreBuffer cutScoreBuffer)
@@ -124,11 +124,16 @@ namespace ACC.Core
 
 		public void HandleCutScoreBufferDidFinish(CutScoreBuffer cutScoreBuffer)
 		{
-			accManager.BreakCombo(BrokenComboType.BelowThresholdOnFinish);
+			if (!IsCutAboveThreshold(cutScoreBuffer))
+				accManager.BreakCombo(BrokenComboType.BelowThresholdOnFinish);
+			else
+				accManager.IncreaseCombo(IncreaseComboType.ProvisionalFinish);
+
 			cutScoreBuffer.UnregisterDidChangeReceiver(this);
 			cutScoreBuffer.UnregisterDidFinishReceiver(this);
 		}
 
+		private bool IsScoringFinished(GoodCutScoringElement goodCutScoringElement) => goodCutScoringElement.cutScoreBuffer.isFinished;
 		private bool IsHeadInObstacle => obstacleInteraction.playerHeadIsInObstacle;
 		private bool IsBurstSliderElement(ScoringElement scoringElement) => IsBurstSliderElement(scoringElement.noteData);
 		private bool IsBurstSliderElement(NoteData noteData) => noteData.scoringType == ScoringType.BurstSliderElement;
@@ -137,6 +142,7 @@ namespace ACC.Core
 		private bool IsCutBad(ScoringElement scoringElement) => scoringElement is BadCutScoringElement;
 		private bool IsCutBad(NoteCutInfo noteCutInfo) => !noteCutInfo.allIsOK;
 		private bool IsCutUnableToExceedThreshold(GoodCutScoringElement scoringElement) => MaxPotentialScore(scoringElement) < config.GetThreshold(scoringElement.noteData.scoringType);
+		private bool IsCutAboveThreshold(GoodCutScoringElement goodCutScoringElement) => IsCutAboveThreshold((CutScoreBuffer)goodCutScoringElement.cutScoreBuffer);
 		private bool IsCutAboveThreshold(CutScoreBuffer cutScoreBuffer) => cutScoreBuffer.cutScore >= config.GetThreshold(cutScoreBuffer.noteCutInfo.noteData.scoringType);
 
 		private int MaxPotentialScore(GoodCutScoringElement scoringElement) => scoringElement.maxPossibleCutScore - MissedCenterDistanceCutScore(scoringElement);
