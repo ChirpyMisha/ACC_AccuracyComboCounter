@@ -39,7 +39,7 @@ namespace ACC.Core
 							s = InsertValAt(s, LowAccCuts, i);
 							break;
 						case 't':
-							s = InsertValAt(s, config.AccuracyThreshold, i);
+							s = InsertValAt(s, config.AccuracyThresholdNormal, i);
 							break;
 						case 'n':
 							s = InsertValAt(s, NoteCount, i);
@@ -82,10 +82,13 @@ namespace ACC.Core
 
 		public void IncreaseCombo(IncreaseComboType type)
 		{
+			//if ( expect full points )
+			//{
 			if (type == IncreaseComboType.ProvisionalOnCut)
 				provisionalCutCount++;
 			else if (type == IncreaseComboType.ProvisionalFinish)
 				provisionalCutCount--;
+			//}
 
 			if (type == IncreaseComboType.OnCut || type == IncreaseComboType.ProvisionalFinish)
 				IncreaseCombo();
@@ -103,6 +106,7 @@ namespace ACC.Core
 
 		public void BreakCombo(BrokenComboType type)
 		{
+			Plugin.Log.Notice($"BreakCombo: Type = {type}");
 			if (!IsTurnedOffInSettings(type))
 			{
 				if (type == BrokenComboType.BelowThresholdOnFinish)
@@ -122,7 +126,7 @@ namespace ACC.Core
 				return false;
 			else if (type == BrokenComboType.BombCut && config.BreakOnBomb)
 				return false;
-			else if (type == BrokenComboType.HeadWasInObstacle && config.BreakOnWall)
+			else if (type == BrokenComboType.HeadIsInObstacle && config.BreakOnWall)
 				return false;
 			return true;
 		}
@@ -174,7 +178,7 @@ namespace ACC.Core
 		BombCut,
 		BelowThresholdOnCut,
 		BelowThresholdOnFinish,
-		HeadWasInObstacle
+		HeadIsInObstacle
 	}
 
 	public enum IncreaseComboType

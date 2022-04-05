@@ -3,22 +3,25 @@ using System;
 using System.Collections.Generic;
 using ACC.Configuration;
 using Zenject;
+using static NoteData;
 
 namespace ACC.Core
 {
-	class AccTracker : IInitializable, IDisposable, ISaberSwingRatingCounterDidChangeReceiver, ISaberSwingRatingCounterDidFinishReceiver
+	class AccTracker : IInitializable, IDisposable, ICutScoreBufferDidChangeReceiver, ICutScoreBufferDidFinishReceiver
 	{
-		private const int MaxSwingScore = ScoreModel.kMaxBeforeCutSwingRawScore + ScoreModel.kMaxAfterCutSwingRawScore;
-
 		private Dictionary<ISaberSwingRatingCounter, NoteCutInfo> swingCounterCutInfo = new Dictionary<ISaberSwingRatingCounter, NoteCutInfo>();
 
 		private readonly ScoreController? scoreController;
+		private readonly BeatmapObjectManager? beatmapObjectManager;
+		private readonly PlayerHeadAndObstacleInteraction obstacleInteraction;
 		private readonly AccManager accManager;
 		private readonly PluginConfig config;
 
-		public AccTracker([InjectOptional] ScoreController scoreController, AccManager accManager)
+		public AccTracker([InjectOptional] ScoreController scoreController, BeatmapObjectManager beatmapObjectManager, AccManager accManager, PlayerHeadAndObstacleInteraction obstacleInteraction)
 		{
 			this.scoreController = scoreController;
+			this.beatmapObjectManager = beatmapObjectManager;
+			this.obstacleInteraction = obstacleInteraction;
 			this.accManager = accManager;
 			config = PluginConfig.Instance;
 		}
@@ -31,11 +34,18 @@ namespace ACC.Core
 			// Assign events
 			if (scoreController != null)
 			{
-				scoreController.noteWasMissedEvent += ScoreController_noteWasMissedEvent;
-				scoreController.noteWasCutEvent += ScoreController_noteWasCutEvent;
+				scoreController.scoringForNoteStartedEvent += ScoreController_scoringForNoteStartedEvent;
+				//scoreController.scoringForNoteFinishedEvent += ScoreController_scoringForNoteFinishedEvent;
 			}
-
-			ScoreControllerWallCollisionDetectionPatch.wallCollisionEvent += WallCollisionDetector_wallCollisionEvent;
+			if (beatmapObjectManager != null)
+			{
+				beatmapObjectManager.noteWasCutEvent += BeatmapObjectManager_noteWasCutEvent;
+				beatmapObjectManager.noteWasMissedEvent += BeatmapObjectManager_noteWasMissedEvent;
+			}
+			if (obstacleInteraction != null)
+			{
+				obstacleInteraction.headDidEnterObstacleEvent += ObstacleInteraction_headDidEnterObstacleEvent;
+			}
 		}
 
 		public void Dispose()
@@ -43,16 +53,25 @@ namespace ACC.Core
 			// Unassign events
 			if (scoreController != null)
 			{
-				scoreController.noteWasMissedEvent -= ScoreController_noteWasMissedEvent;
-				scoreController.noteWasCutEvent -= ScoreController_noteWasCutEvent;
+				scoreController.scoringForNoteStartedEvent -= ScoreController_scoringForNoteStartedEvent;
+				//scoreController.scoringForNoteFinishedEvent -= ScoreController_scoringForNoteFinishedEvent;
 			}
-
-			ScoreControllerWallCollisionDetectionPatch.wallCollisionEvent -= WallCollisionDetector_wallCollisionEvent;
+			if (beatmapObjectManager != null)
+			{
+				beatmapObjectManager.noteWasMissedEvent -= BeatmapObjectManager_noteWasMissedEvent;
+				beatmapObjectManager.noteWasMissedEvent -= BeatmapObjectManager_noteWasMissedEvent;
+			}
+			if (obstacleInteraction != null)
+			{
+				obstacleInteraction.headDidEnterObstacleEvent -= ObstacleInteraction_headDidEnterObstacleEvent;
+			}
 		}
 
-		private void ScoreController_noteWasMissedEvent(NoteData noteData, int _) => EvaluateMiss(noteData);
-		private void ScoreController_noteWasCutEvent(NoteData noteData, in NoteCutInfo noteCutInfo, int multiplier) => EvaluateCut(noteData, noteCutInfo);
-		private void WallCollisionDetector_wallCollisionEvent() => accManager.BreakCombo(BrokenComboType.HeadWasInObstacle);
+		private void ObstacleInteraction_headDidEnterObstacleEvent(ObstacleController _) => accManager.BreakCombo(BrokenComboType.HeadIsInObstacle);
+
+		private void BeatmapObjectManager_noteWasMissedEvent(NoteController noteController) => EvaluateMiss(noteController.noteData);
+		private void BeatmapObjectManager_noteWasCutEvent(NoteController noteController, in NoteCutInfo noteCutInfo) => EvaluateCut(noteController, noteCutInfo);
+		private void ScoreController_scoringForNoteStartedEvent(ScoringElement scoringElement) => EvaluateScoringStart(scoringElement);
 
 		private void EvaluateMiss(NoteData noteData)
 		{
@@ -62,87 +81,65 @@ namespace ACC.Core
 			accManager.BreakCombo(BrokenComboType.Miss);
 		}
 
-		private void EvaluateCut(NoteData noteData, NoteCutInfo noteCutInfo)
+		private void EvaluateCut(NoteController noteController, NoteCutInfo noteCutInfo)
 		{
-			if (IsBomb(noteData))
+			NoteData noteData = noteController.noteData;
+
+			if (IsHeadInObstacle)
+				accManager.BreakCombo(BrokenComboType.HeadIsInObstacle);
+			else if (IsBomb(noteData))
 				accManager.BreakCombo(BrokenComboType.BombCut);
 			else if (IsCutBad(noteCutInfo))
 				accManager.BreakCombo(BrokenComboType.BadCut);
-			else if (IsCutUnableToExceedThreshold(noteCutInfo))
-				accManager.BreakCombo(BrokenComboType.BelowThresholdOnCut);
-			else if (IsCutAboveThreshold(noteCutInfo))
-				accManager.IncreaseCombo(IncreaseComboType.OnCut);
-			else
-				TrackCut(noteCutInfo);
 		}
 
-		private bool IsBomb(NoteData noteData) => noteData.colorType == ColorType.None;
+		private void EvaluateScoringStart(ScoringElement scoringElement)
+		{
+			if (scoringElement is GoodCutScoringElement goodCutScoringElement && !IsHeadInObstacle)
+			{
+				if (IsBurstSliderElement(goodCutScoringElement))
+					accManager.IncreaseCombo(IncreaseComboType.OnCut);
+				else if (IsCutUnableToExceedThreshold(goodCutScoringElement))
+					accManager.BreakCombo(BrokenComboType.BelowThresholdOnCut);
+				else
+				{
+					accManager.IncreaseCombo(IncreaseComboType.ProvisionalOnCut);
+					goodCutScoringElement.cutScoreBuffer.RegisterDidChangeReceiver(this);
+					goodCutScoringElement.cutScoreBuffer.RegisterDidFinishReceiver(this);
+				}
+			}
+			else
+				Plugin.Log.Notice($"AccTracker, ESS:\n> colorType = {scoringElement.noteData.colorType}\n> gameplayType = {scoringElement.noteData.gameplayType}\n> scoringType = {scoringElement.noteData.scoringType}");
+		}
+
+		public void HandleCutScoreBufferDidChange(CutScoreBuffer cutScoreBuffer)
+		{
+			if (!IsCutAboveThreshold(cutScoreBuffer))
+				return;
+
+			accManager.IncreaseCombo(IncreaseComboType.ProvisionalFinish);
+			cutScoreBuffer.UnregisterDidChangeReceiver(this);
+			cutScoreBuffer.UnregisterDidFinishReceiver(this);
+		}
+
+		public void HandleCutScoreBufferDidFinish(CutScoreBuffer cutScoreBuffer)
+		{
+			accManager.BreakCombo(BrokenComboType.BelowThresholdOnFinish);
+			cutScoreBuffer.UnregisterDidChangeReceiver(this);
+			cutScoreBuffer.UnregisterDidFinishReceiver(this);
+		}
+
+		private bool IsHeadInObstacle => obstacleInteraction.playerHeadIsInObstacle;
+		private bool IsBurstSliderElement(ScoringElement scoringElement) => IsBurstSliderElement(scoringElement.noteData);
+		private bool IsBurstSliderElement(NoteData noteData) => noteData.scoringType == ScoringType.BurstSliderElement;
+		private bool IsBomb(ScoringElement scoringElement) => IsBomb(scoringElement.noteData);
+		private bool IsBomb(NoteData noteData) => noteData.gameplayType == GameplayType.Bomb;
+		private bool IsCutBad(ScoringElement scoringElement) => scoringElement is BadCutScoringElement;
 		private bool IsCutBad(NoteCutInfo noteCutInfo) => !noteCutInfo.allIsOK;
-		private bool IsCutUnableToExceedThreshold(NoteCutInfo noteCutInfo) => MaxPotentialScore(noteCutInfo) < config.AccuracyThreshold;
-		private bool IsCutAboveThreshold(NoteCutInfo noteCutInfo) => GetCutScore(noteCutInfo) >= config.AccuracyThreshold;
-		private bool IsCutAboveThreshold(ISaberSwingRatingCounter saberSwingRatingCounter) => IsCutAboveThreshold(GetnoteCutInfo(saberSwingRatingCounter));
+		private bool IsCutUnableToExceedThreshold(GoodCutScoringElement scoringElement) => MaxPotentialScore(scoringElement) < config.GetThreshold(scoringElement.noteData.scoringType);
+		private bool IsCutAboveThreshold(CutScoreBuffer cutScoreBuffer) => cutScoreBuffer.cutScore >= config.GetThreshold(cutScoreBuffer.noteCutInfo.noteData.scoringType);
 
-		private int MaxPotentialScore(NoteCutInfo noteCutInfo)
-		{
-			ScoreModel.RawScoreWithoutMultiplier(noteCutInfo.swingRatingCounter, noteCutInfo.cutDistanceToCenter, out int _, out int _, out int acc);
-			return acc + MaxSwingScore;
-		}
-
-		private int GetCutScore(NoteCutInfo noteCutInfo)
-		{
-			ScoreModel.RawScoreWithoutMultiplier(noteCutInfo.swingRatingCounter, noteCutInfo.cutDistanceToCenter, out int preSwing, out int afterSwing, out int acc);
-			return preSwing + afterSwing + acc;
-		}
-
-		private NoteCutInfo GetnoteCutInfo(ISaberSwingRatingCounter saberSwingRatingCounter)
-		{
-			NoteCutInfo noteCutInfo;
-			if (!swingCounterCutInfo.TryGetValue(saberSwingRatingCounter, out noteCutInfo))
-			{
-				Plugin.Log.Error("AccThresholdTracker, GetnoteCutInfo : Failed to get NoteCutInfo from noteCutInfoData!");
-				UnregisterSaberSwingRatingCounter(saberSwingRatingCounter);
-			}
-
-			return noteCutInfo;
-		}
-
-		private void TrackCut(NoteCutInfo noteCutInfo)
-		{
-			accManager.IncreaseCombo(IncreaseComboType.ProvisionalOnCut);
-
-			swingCounterCutInfo.Add(noteCutInfo.swingRatingCounter, noteCutInfo);
-			noteCutInfo.swingRatingCounter.RegisterDidChangeReceiver(this);
-			noteCutInfo.swingRatingCounter.RegisterDidFinishReceiver(this);
-		}
-
-		public void HandleSaberSwingRatingCounterDidChange(ISaberSwingRatingCounter saberSwingRatingCounter, float rating)
-		{
-			if (IsCutAboveThreshold(saberSwingRatingCounter))
-			{
-				accManager.IncreaseCombo(IncreaseComboType.ProvisionalFinish);
-
-				UnregisterSaberSwingRatingCounter(saberSwingRatingCounter);
-			}
-		}
-
-		public void HandleSaberSwingRatingCounterDidFinish(ISaberSwingRatingCounter saberSwingRatingCounter)
-		{
-			if (IsCutAboveThreshold(saberSwingRatingCounter))
-			{
-				Plugin.Log.Warn("Please let ChirpyMisha know that \"the condition\" has been met. The world may end when this warning will be ignored . . .");
-				accManager.IncreaseCombo(IncreaseComboType.ProvisionalFinish);
-			}
-			else
-				accManager.BreakCombo(BrokenComboType.BelowThresholdOnFinish);
-
-			UnregisterSaberSwingRatingCounter(saberSwingRatingCounter);
-		}
-
-		private void UnregisterSaberSwingRatingCounter(ISaberSwingRatingCounter saberSwingRatingCounter)
-		{
-			swingCounterCutInfo.Remove(saberSwingRatingCounter);
-			saberSwingRatingCounter.UnregisterDidChangeReceiver(this);
-			saberSwingRatingCounter.UnregisterDidFinishReceiver(this);
-		}
+		private int MaxPotentialScore(GoodCutScoringElement scoringElement) => scoringElement.maxPossibleCutScore - MissedCenterDistanceCutScore(scoringElement);
+		private int MissedCenterDistanceCutScore(GoodCutScoringElement scoringElement) => scoringElement.cutScoreBuffer.noteScoreDefinition.maxCenterDistanceCutScore - scoringElement.cutScoreBuffer.centerDistanceCutScore;
 	}
 }

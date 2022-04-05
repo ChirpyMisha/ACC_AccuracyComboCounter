@@ -11,7 +11,7 @@ namespace ACC
 {
 	// Ah. The art of the bodge.
 	// The Start function of the ComboUIController sets the comboText to "0". But I want it to be something else.
-	// And since the Start method is called after the Counter's Init I have to find a way to set the text after the Start method sets it to "0". Hence the HarmonyPatch :D
+	// And since the Start method is called after the Counter's Init I had to find a way to set the text after the Start method sets it to "0". Hence the HarmonyPatch :D
 
 	[HarmonyPatch(typeof(ComboUIController))]
 	[HarmonyPatch("Start")]

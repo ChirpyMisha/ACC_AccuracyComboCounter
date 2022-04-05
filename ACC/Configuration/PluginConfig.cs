@@ -1,15 +1,31 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using IPA.Config.Stores;
+using static NoteData;
 
 [assembly: InternalsVisibleTo(GeneratedStore.AssemblyVisibilityTarget)]
 namespace ACC.Configuration
 {
 	internal class PluginConfig
 	{
-		public static PluginConfig Instance { get; set; } = null!;
+		private static PluginConfig instance { get; set; } = null!;
+		public static PluginConfig Instance
+		{
+			get { return instance; }
+			set
+			{
+				if (instance == null)
+					instance = value;
+				else
+					Plugin.Log.Error("Unable to set PluginConfig.Instance - Instance has already been set.");
+			}
+		}
 
-		public virtual int AccuracyThreshold { get; set; } = 0;
+		public virtual bool EnableAdvancedAccuracyThresholds { get; set; } = false;
+		public virtual int AccuracyThresholdNormal { get; set; } = 0;
+		public virtual int AccuracyThresholdSliderHead { get; set; } = 0;
+		public virtual int AccuracyThresholdSliderTail { get; set; } = 0;
+		public virtual int AccuracyThresholdBurstSlider { get; set; } = 0;
 		public virtual bool ShowOnResultsScreen { get; set; } = true;
 		public virtual bool HideComboBreakAnimation { get; set; } = false;
 		public ExtraCounterPositions MaxComboPosition { get; set; } = ExtraCounterPositions.Disabled;
@@ -34,7 +50,25 @@ namespace ACC.Configuration
 		internal const string DefaultMaxComboText = "MAX ACC COMBO %m";
 		internal const string DefaultFullComboText = "FULL ACC COMBO";
 
-
+		public int GetThreshold(ScoringType scoringType)
+		{
+			switch (scoringType)
+			{
+				case ScoringType.Normal:
+					return AccuracyThresholdNormal;
+				case ScoringType.SliderHead:
+					return AccuracyThresholdSliderHead;
+				case ScoringType.SliderTail:
+					return AccuracyThresholdSliderTail;
+				case ScoringType.BurstSliderHead:
+					return AccuracyThresholdBurstSlider;
+				default:
+					int defaultThreshold = 0;
+					Plugin.Log.Error($"PluginConfig, GetThreshold: Invalid value for ScoringType. ScoringType=\"{scoringType}\"\n" +
+						$"> Returning a value of {defaultThreshold}.");
+					return defaultThreshold;
+			}
+		}
 
 		/// <summary>
 		/// This is called whenever BSIPA reads the config from disk (including when file changes are detected).

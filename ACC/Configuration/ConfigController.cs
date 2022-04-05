@@ -18,17 +18,47 @@ namespace ACC.Configuration
 		public event PropertyChangedEventHandler PropertyChanged;
 #pragma warning restore CS8618
 
+
 		private void RaisePropertyChanged([CallerMemberName] string propertyName = "")
 		{
 			this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
 
 		// Settings getters/setters
-		[UIValue("AccuracyThreshold")]
-		public virtual int AccuracyThreshold
+		[UIValue("AccuracyThresholdNormal")]
+		public virtual int AccuracyThresholdNormal
 		{
-			get { return PluginConfig.Instance.AccuracyThreshold; }
-			set { PluginConfig.Instance.AccuracyThreshold = value; }
+			get { return PluginConfig.Instance.AccuracyThresholdNormal; }
+			set 
+			{ 
+				if (!PluginConfig.Instance.EnableAdvancedAccuracyThresholds)
+				{
+					PluginConfig.Instance.AccuracyThresholdSliderHead = value;
+					PluginConfig.Instance.AccuracyThresholdSliderTail = value;
+				}
+				PluginConfig.Instance.AccuracyThresholdNormal = value;
+			}
+		}
+
+		[UIValue("AccuracyThresholdSliderHead")]
+		public virtual int AccuracyThresholdSliderHead
+		{
+			get { return PluginConfig.Instance.AccuracyThresholdSliderHead; }
+			set { PluginConfig.Instance.AccuracyThresholdSliderHead = value; }
+		}
+
+		[UIValue("AccuracyThresholdSliderTail")]
+		public virtual int AccuracyThresholdSliderTail
+		{
+			get { return PluginConfig.Instance.AccuracyThresholdSliderTail; }
+			set { PluginConfig.Instance.AccuracyThresholdSliderTail = value; }
+		}
+
+		[UIValue("AccuracyThresholdBurstSlider")]
+		public virtual int AccuracyThresholdBurstSlider
+		{
+			get { return PluginConfig.Instance.AccuracyThresholdBurstSlider; }
+			set { PluginConfig.Instance.AccuracyThresholdBurstSlider = value; }
 		}
 
 		[UIValue("ShowOnResultsScreen")]
@@ -184,6 +214,11 @@ namespace ACC.Configuration
 		[UIValue("is-low-acc-cuts-counter-enabled-color")]
 		private string IsLowAccCutsCounterEnabledColor => GetInteractabilityColor(IsLowAccCutsCounterEnabled);
 		private bool IsDisabled(ExtraCounterPositions counterPos) => counterPos != ExtraCounterPositions.Disabled;
+
+
+		// Enable/Disable Advanced Accuracy Thresholds
+		[UIValue("is-advanced-accuracy-threshold-enabled")]
+		private bool IsAdvancedAccuracyThresholdEnabled => PluginConfig.Instance.EnableAdvancedAccuracyThresholds;
 
 
 		// Update interactibility
