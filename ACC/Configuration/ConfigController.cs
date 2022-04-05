@@ -68,6 +68,20 @@ namespace ACC.Configuration
 			set { PluginConfig.Instance.ShowOnResultsScreen = value; }
 		}
 
+		[UIValue("HideComboBreakAnimation")]
+		public virtual bool HideComboBreakAnimation
+		{
+			get { return PluginConfig.Instance.HideComboBreakAnimation; }
+			set { PluginConfig.Instance.HideComboBreakAnimation = value; }
+		}
+
+		[UIValue("AssumeFullSwingScoreOnCut")]
+		public virtual bool AssumeFullSwingScoreOnCut
+		{
+			get { return PluginConfig.Instance.AssumeFullSwingScoreOnCut; }
+			set { PluginConfig.Instance.AssumeFullSwingScoreOnCut = value; }
+		}
+
 		[UIValue("MaxComboPosition")]
 		public virtual ExtraCounterPositions MaxComboPosition
 		{
@@ -118,13 +132,6 @@ namespace ACC.Configuration
 		{
 			get { return PluginConfig.Instance.BreakOnWall; }
 			set { PluginConfig.Instance.BreakOnWall = value; }
-		}
-
-		[UIValue("HideComboBreakAnimation")]
-		public virtual bool HideComboBreakAnimation
-		{
-			get { return PluginConfig.Instance.HideComboBreakAnimation; }
-			set { PluginConfig.Instance.HideComboBreakAnimation = value; }
 		}
 
 		[UIValue("ComboLabelText")]

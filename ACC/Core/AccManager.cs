@@ -82,13 +82,13 @@ namespace ACC.Core
 
 		public void IncreaseCombo(IncreaseComboType type)
 		{
-			//if ( expect full points )
-			//{
-			if (type == IncreaseComboType.ProvisionalOnCut)
-				provisionalCutCount++;
-			else if (type == IncreaseComboType.ProvisionalFinish)
-				provisionalCutCount--;
-			//}
+			if (config.AssumeFullSwingScoreOnCut)
+			{
+				if (type == IncreaseComboType.ProvisionalOnCut)
+					provisionalCutCount++;
+				else if (type == IncreaseComboType.ProvisionalFinish)
+					provisionalCutCount--;
+			}
 
 			if (type == IncreaseComboType.OnCut || type == IncreaseComboType.ProvisionalFinish)
 				IncreaseCombo();

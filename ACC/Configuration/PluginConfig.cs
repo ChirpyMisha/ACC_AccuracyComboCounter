@@ -28,6 +28,7 @@ namespace ACC.Configuration
 		public virtual int AccuracyThresholdBurstSlider { get; set; } = 0;
 		public virtual bool ShowOnResultsScreen { get; set; } = true;
 		public virtual bool HideComboBreakAnimation { get; set; } = false;
+		public virtual bool AssumeFullSwingScoreOnCut { get; set; } = true;
 		public ExtraCounterPositions MaxComboPosition { get; set; } = ExtraCounterPositions.Disabled;
 		public ExtraCounterPositions LowAccCutsPosition { get; set; } = ExtraCounterPositions.Disabled;
 		public virtual bool BreakOnMiss { get; set; } = true;

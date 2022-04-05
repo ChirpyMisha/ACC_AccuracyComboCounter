@@ -16,6 +16,8 @@
 										value='ShowOnResultsScreen' apply-on-change='true'/>
 	<checkbox-setting text='Hide Combo Break Animation' hover-hint='Is the combo break animation too distracting? Turn this on to hide it.'
 										value='HideComboBreakAnimation' apply-on-change='true'/>
+	<checkbox-setting text='Assume Full Swing Score On Cut' hover-hint='Enabling this makes the combo more responsive, but it can temporarily show an incorrect score. This is just a visual difference.'
+										value='AssumeFullSwingScoreOnCut' apply-on-change='true'/>
 
 	<text text=':Extra Counters:' font-size='5' align='Center'/>
 	
