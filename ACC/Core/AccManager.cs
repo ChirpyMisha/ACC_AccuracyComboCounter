@@ -12,12 +12,14 @@ namespace ACC.Core
 
 		PluginConfig config;
 
+		private bool isBreakingHighscore;
 		private int provisionalCutCount;
 		public int NoteCount { get; private set; }
 		public int Combo { get; private set; }
 		public int MaxCombo { get; private set; }
 		public int LowAccCuts { get; private set; }
 		public int ProvisionalCombo => Combo + provisionalCutCount;
+		public int ProvisionalMaxCombo => isBreakingHighscore ? MaxCombo + provisionalCutCount : MaxCombo;
 		public int HighAccCuts => NoteCount - LowAccCuts;
 
 		public string InsertValuesInFormattedString(string s)
@@ -30,10 +32,12 @@ namespace ACC.Core
 					{
 						
 						case 'c':
-							s = InsertValAt(s, ProvisionalCombo, i);
+							int combo = config.AssumeFullSwingScoreOnCut ? ProvisionalCombo : Combo;
+							s = InsertValAt(s, combo, i);
 							break;
 						case 'm':
-							s = InsertValAt(s, MaxCombo, i);
+							int maxCombo = config.AssumeFullSwingScoreOnCut ? ProvisionalMaxCombo : MaxCombo;
+							s = InsertValAt(s, maxCombo, i);
 							break;
 						case 'l':
 							s = InsertValAt(s, LowAccCuts, i);
@@ -78,17 +82,15 @@ namespace ACC.Core
 			Combo = 0;
 			MaxCombo = 0;
 			LowAccCuts = 0;
+			isBreakingHighscore = true;
 		}
 
 		public void IncreaseCombo(IncreaseComboType type)
 		{
-			if (config.AssumeFullSwingScoreOnCut)
-			{
-				if (type == IncreaseComboType.ProvisionalOnCut)
-					provisionalCutCount++;
-				else if (type == IncreaseComboType.ProvisionalFinish)
-					provisionalCutCount--;
-			}
+			if (type == IncreaseComboType.ProvisionalOnCut)
+				provisionalCutCount++;
+			else if (type == IncreaseComboType.ProvisionalFinish)
+				provisionalCutCount--;
 
 			if (type == IncreaseComboType.OnCut || type == IncreaseComboType.ProvisionalFinish)
 				IncreaseCombo();
@@ -101,7 +103,10 @@ namespace ACC.Core
 		{
 			NoteCount++;
 			if (++Combo > MaxCombo)
+			{
 				MaxCombo = Combo;
+				isBreakingHighscore = true;
+			}
 		}
 
 		public void BreakCombo(BrokenComboType type)
@@ -136,6 +141,7 @@ namespace ACC.Core
 			NoteCount++;
 			LowAccCuts++;
 			Combo = 0;
+			isBreakingHighscore = false;
 
 			// Inform listeners that the combo has updated
 			InvokeComboBroken();
