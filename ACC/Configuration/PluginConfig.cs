@@ -58,9 +58,9 @@ namespace ACC.Configuration
 				case ScoringType.Normal:
 					return AccuracyThresholdNormal;
 				case ScoringType.SliderHead:
-					return AccuracyThresholdSliderHead;
+					return EnableAdvancedAccuracyThresholds ? AccuracyThresholdSliderHead : AccuracyThresholdNormal;
 				case ScoringType.SliderTail:
-					return AccuracyThresholdSliderTail;
+					return EnableAdvancedAccuracyThresholds ? AccuracyThresholdSliderTail : AccuracyThresholdNormal;
 				case ScoringType.BurstSliderHead:
 					return AccuracyThresholdBurstSlider;
 				default:
