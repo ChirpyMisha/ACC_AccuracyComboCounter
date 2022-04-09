@@ -1,13 +1,13 @@
 ﻿<vertical xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:schemaLocation='https://monkeymanboy.github.io/BSML-Docs/ https://raw.githubusercontent.com/monkeymanboy/BSML-Docs/gh-pages/BSMLSchema.xsd' spacing='1' horizontal-fit='PreferredSize' vertical-fit='PreferredSize'>
 	<slider-setting text='Accuracy Threshold Normal' hover-hint='A hit score on a normal block which is below this score will break the Accuracy Combo&#xA;
-		(Individual sliders for the Slider Head and Slider Tail can be enabled by setting "EnableAdvancedAccuracyThresholds" in the settings file in "Beat Saber/UserData" to "true")'
+		(Individual sliders for the Arc Head and Arc Tail can be enabled by setting "EnableAdvancedAccuracyThresholds" in the settings file in "Beat Saber/UserData" to "true")'
 										 value='AccuracyThresholdNormal' apply-on-change='true' show-buttons='true'
 										 integer-only='true' min='1' max='115' increment='1'/>
-	<slider-setting text='Accuracy Threshold Slider Head' hover-hint='A hit score on a normal block which is below this score will break the Accuracy Combo'
-									 value='AccuracyThresholdSliderHead' apply-on-change='true' show-buttons='true'
+	<slider-setting text='Accuracy Threshold Arc Head' hover-hint='A hit score on a normal block which is below this score will break the Accuracy Combo'
+									 value='AccuracyThresholdArcHead' apply-on-change='true' show-buttons='true'
 									 integer-only='true' min='30' max='115' increment='1' active='~is-advanced-accuracy-threshold-enabled'/>
-	<slider-setting text='Accuracy Threshold Slider Tail' hover-hint='A hit score on a normal block which is below this score will break the Accuracy Combo'
-									 value='AccuracyThresholdSliderTail' apply-on-change='true' show-buttons='true'
+	<slider-setting text='Accuracy Threshold Arc Tail' hover-hint='A hit score on a normal block which is below this score will break the Accuracy Combo'
+									 value='AccuracyThresholdArcTail' apply-on-change='true' show-buttons='true'
 									 integer-only='true' min='70' max='115' increment='1' active='~is-advanced-accuracy-threshold-enabled'/>
 	<slider-setting text='Accuracy Threshold Burst Slider' hover-hint='A hit score on a burst slider which is below this score will break the Accuracy Combo'
 										 value='AccuracyThresholdBurstSlider' apply-on-change='true' show-buttons='true'

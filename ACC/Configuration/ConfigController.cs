@@ -33,25 +33,25 @@ namespace ACC.Configuration
 			{ 
 				if (!PluginConfig.Instance.EnableAdvancedAccuracyThresholds)
 				{
-					PluginConfig.Instance.AccuracyThresholdSliderHead = value;
-					PluginConfig.Instance.AccuracyThresholdSliderTail = value;
+					PluginConfig.Instance.AccuracyThresholdArcHead = value;
+					PluginConfig.Instance.AccuracyThresholdArcTail = value;
 				}
 				PluginConfig.Instance.AccuracyThresholdNormal = value;
 			}
 		}
 
-		[UIValue("AccuracyThresholdSliderHead")]
-		public virtual int AccuracyThresholdSliderHead
+		[UIValue("AccuracyThresholdArcHead")]
+		public virtual int AccuracyThresholdArcHead
 		{
-			get { return PluginConfig.Instance.AccuracyThresholdSliderHead; }
-			set { PluginConfig.Instance.AccuracyThresholdSliderHead = value; }
+			get { return PluginConfig.Instance.AccuracyThresholdArcHead; }
+			set { PluginConfig.Instance.AccuracyThresholdArcHead = value; }
 		}
 
-		[UIValue("AccuracyThresholdSliderTail")]
-		public virtual int AccuracyThresholdSliderTail
+		[UIValue("AccuracyThresholdArcTail")]
+		public virtual int AccuracyThresholdArcTail
 		{
-			get { return PluginConfig.Instance.AccuracyThresholdSliderTail; }
-			set { PluginConfig.Instance.AccuracyThresholdSliderTail = value; }
+			get { return PluginConfig.Instance.AccuracyThresholdArcTail; }
+			set { PluginConfig.Instance.AccuracyThresholdArcTail = value; }
 		}
 
 		[UIValue("AccuracyThresholdBurstSlider")]

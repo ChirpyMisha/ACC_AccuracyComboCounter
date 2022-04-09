@@ -23,8 +23,8 @@ namespace ACC.Configuration
 
 		public virtual bool EnableAdvancedAccuracyThresholds { get; set; } = false;
 		public virtual int AccuracyThresholdNormal { get; set; } = 1;
-		public virtual int AccuracyThresholdSliderHead { get; set; } = 30;
-		public virtual int AccuracyThresholdSliderTail { get; set; } = 70;
+		public virtual int AccuracyThresholdArcHead { get; set; } = 30;
+		public virtual int AccuracyThresholdArcTail { get; set; } = 70;
 		public virtual int AccuracyThresholdBurstSlider { get; set; } = 1;
 		public virtual bool ShowOnResultsScreen { get; set; } = true;
 		public virtual bool HideComboBreakAnimation { get; set; } = false;
@@ -58,9 +58,9 @@ namespace ACC.Configuration
 				case ScoringType.Normal:
 					return AccuracyThresholdNormal;
 				case ScoringType.SliderHead:
-					return EnableAdvancedAccuracyThresholds ? AccuracyThresholdSliderHead : AccuracyThresholdNormal;
+					return EnableAdvancedAccuracyThresholds ? AccuracyThresholdArcHead : AccuracyThresholdNormal;
 				case ScoringType.SliderTail:
-					return EnableAdvancedAccuracyThresholds ? AccuracyThresholdSliderTail : AccuracyThresholdNormal;
+					return EnableAdvancedAccuracyThresholds ? AccuracyThresholdArcTail : AccuracyThresholdNormal;
 				case ScoringType.BurstSliderHead:
 					return AccuracyThresholdBurstSlider;
 				default:
