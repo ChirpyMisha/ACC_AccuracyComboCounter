@@ -2,16 +2,16 @@
 	<slider-setting text='Accuracy Threshold Normal' hover-hint='A hit score on a normal block which is below this score will break the Accuracy Combo&#xA;
 		(Individual sliders for the Slider Head and Slider Tail can be enabled by setting "EnableAdvancedAccuracyThresholds" in the settings file in "Beat Saber/UserData" to "true")'
 										 value='AccuracyThresholdNormal' apply-on-change='true' show-buttons='true'
-										 integer-only='true' min='0' max='115' increment='1'/>
+										 integer-only='true' min='1' max='115' increment='1'/>
 	<slider-setting text='Accuracy Threshold Slider Head' hover-hint='A hit score on a normal block which is below this score will break the Accuracy Combo'
 									 value='AccuracyThresholdSliderHead' apply-on-change='true' show-buttons='true'
-									 integer-only='true' min='30' max='115' increment='1' enabled='~IsAdvancedAccuracyThresholdEnabled'/>
+									 integer-only='true' min='30' max='115' increment='1' active='~is-advanced-accuracy-threshold-enabled'/>
 	<slider-setting text='Accuracy Threshold Slider Tail' hover-hint='A hit score on a normal block which is below this score will break the Accuracy Combo'
 									 value='AccuracyThresholdSliderTail' apply-on-change='true' show-buttons='true'
-									 integer-only='true' min='70' max='115' increment='1' enabled='~IsAdvancedAccuracyThresholdEnabled'/>
+									 integer-only='true' min='70' max='115' increment='1' active='~is-advanced-accuracy-threshold-enabled'/>
 	<slider-setting text='Accuracy Threshold Burst Slider' hover-hint='A hit score on a burst slider which is below this score will break the Accuracy Combo'
 										 value='AccuracyThresholdBurstSlider' apply-on-change='true' show-buttons='true'
-										 integer-only='true' min='0' max='85' increment='1'/>
+										 integer-only='true' min='1' max='85' increment='1'/>
 	<checkbox-setting text='Show On Results Screen' hover-hint='Do you want the number of good cuts and your max combo to be shown on the results screen?'
 										value='ShowOnResultsScreen' apply-on-change='true'/>
 	<checkbox-setting text='Hide Combo Break Animation' hover-hint='Is the combo break animation too distracting? Turn this on to hide it.'
