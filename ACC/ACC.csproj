@@ -144,7 +144,6 @@
     <Compile Include="Configuration\ConfigController.cs" />
     <Compile Include="Core\AccManager.cs" />
     <Compile Include="Core\AccTracker.cs" />
-    <Compile Include="Core\ScoreControllerWallCollisionDetectionPatch.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Configuration\PluginConfig.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
