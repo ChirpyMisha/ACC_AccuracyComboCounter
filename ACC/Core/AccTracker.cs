@@ -13,11 +13,11 @@ namespace ACC.Core
 
 		private readonly ScoreController? scoreController;
 		private readonly BeatmapObjectManager? beatmapObjectManager;
-		private readonly PlayerHeadAndObstacleInteraction obstacleInteraction;
+		private readonly PlayerHeadAndObstacleInteraction? obstacleInteraction;
 		private readonly AccManager accManager;
 		private readonly PluginConfig config;
 
-		public AccTracker([InjectOptional] ScoreController scoreController, BeatmapObjectManager beatmapObjectManager, AccManager accManager, PlayerHeadAndObstacleInteraction obstacleInteraction)
+		public AccTracker([InjectOptional] ScoreController scoreController, [InjectOptional] BeatmapObjectManager beatmapObjectManager, [InjectOptional] PlayerHeadAndObstacleInteraction obstacleInteraction, AccManager accManager)
 		{
 			this.scoreController = scoreController;
 			this.beatmapObjectManager = beatmapObjectManager;
@@ -35,7 +35,6 @@ namespace ACC.Core
 			if (scoreController != null)
 			{
 				scoreController.scoringForNoteStartedEvent += ScoreController_scoringForNoteStartedEvent;
-				//scoreController.scoringForNoteFinishedEvent += ScoreController_scoringForNoteFinishedEvent;
 			}
 			if (beatmapObjectManager != null)
 			{
@@ -54,7 +53,6 @@ namespace ACC.Core
 			if (scoreController != null)
 			{
 				scoreController.scoringForNoteStartedEvent -= ScoreController_scoringForNoteStartedEvent;
-				//scoreController.scoringForNoteFinishedEvent -= ScoreController_scoringForNoteFinishedEvent;
 			}
 			if (beatmapObjectManager != null)
 			{
@@ -134,7 +132,7 @@ namespace ACC.Core
 		}
 
 		private bool IsScoringFinished(GoodCutScoringElement goodCutScoringElement) => goodCutScoringElement.cutScoreBuffer.isFinished;
-		private bool IsHeadInObstacle => obstacleInteraction.playerHeadIsInObstacle;
+		private bool IsHeadInObstacle => obstacleInteraction != null && obstacleInteraction.playerHeadIsInObstacle;
 		private bool IsBurstSliderElement(ScoringElement scoringElement) => IsBurstSliderElement(scoringElement.noteData);
 		private bool IsBurstSliderElement(NoteData noteData) => noteData.scoringType == ScoringType.BurstSliderElement;
 		private bool IsBomb(ScoringElement scoringElement) => IsBomb(scoringElement.noteData);
